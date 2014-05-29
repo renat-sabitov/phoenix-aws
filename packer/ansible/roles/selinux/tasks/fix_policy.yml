@@ -1,0 +1,9 @@
+---
+- name: add correct policy for /usr/sbin/unix_chkpwd
+  lineinfile: 
+    dest=/etc/selinux/targeted/contexts/files/file_contexts.local
+    regexp="^/usr/sbin/unix_chkpwd"
+    line="/usr/sbin/unix_chkpwd -- system_u:object_r:chkpwd_exec_t:s0"
+
+- name: compile policy
+  command: semodule -R

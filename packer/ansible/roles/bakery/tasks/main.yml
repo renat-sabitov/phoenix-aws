@@ -1,0 +1,12 @@
+---
+- name: Install packages to build
+  yum: name={{ item }}
+  with_items:
+    - bzr
+    - mercurial
+    - git
+    - golang
+
+- name: compile Packer
+  include: compile.yml
+  sudo: no 

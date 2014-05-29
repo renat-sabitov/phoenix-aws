@@ -1,0 +1,23 @@
+---
+- name: create GOPATH directory
+  file: path=~/go state=directory
+
+- name: Add GOPATH to environment
+  lineinfile: dest="~/.bashrc" line="export GOPATH=~/go"
+
+- name: Add $GOPATH/bin to $PATH
+  lineinfile: dest="~/.bashrc" line="export PATH=$GOPATH/bin:$PATH"
+
+- name: Get sources
+  command: go get -u {{ item }}
+  environment:
+    GOPATH: "/home/{{ ansible_env.SUDO_USER }}/go"
+  with_items:
+    - "github.com/mitchellh/gox"
+    - "github.com/mitchellh/packer"
+
+- name: Compile Packer
+  command: make chdir="~/go/src/github.com/mitchellh/packer"
+  environment:
+    PATH: "/home/{{ ansible_env.SUDO_USER }}/go/bin:{{ ansible_env.PATH }}"
+    GOPATH: "/home/{{ ansible_env.SUDO_USER }}/go"

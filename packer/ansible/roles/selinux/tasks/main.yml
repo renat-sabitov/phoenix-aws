@@ -1,0 +1,22 @@
+---
+- name: Install SELinux 
+  yum: name={{ item }} state=latest
+  with_items:
+    - policycoreutils
+    - selinux-policy-targeted
+    - libselinux-python
+
+- name: Enable SELinux in configs
+  selinux: policy=targeted state=enforcing
+
+- name: Set SELinux kernel parameters
+  command: grubby --update-kernel=ALL --args "selinux=1 security=selinux enforcing=1" 
+
+- name: 
+  command: /sbin/new-kernel-pkg --package kernel --mkinitrd --make-default --dracut --depmod --install {{ ansible_kernel }} 
+
+- name: Relabel filesystem
+  file: path=/.autorelabel state=touch
+
+- name: Fix SELinux
+  include: fix_selinux.yml

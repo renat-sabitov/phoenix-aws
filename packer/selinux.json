@@ -1,0 +1,45 @@
+{
+  "variables": {
+    "image_name": "Sirca_Linux_SELinux",
+    "version": "{{timestamp}}",
+    "base_ami": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "us-west-2",
+    "source_ami": "{{user `base_ami`}}",
+    "instance_type": "t1.micro",
+    "ssh_username": "ec2-user",
+    "ssh_timeout": "8m",
+    "ami_name": "{{user `image_name`}}_{{user `version`}}",
+    "ami_users": ["586104194119","325887898004"],
+    "run_tags": {
+      "User":"ci",
+      "Billing": "SIRCA_Limited+Academic_Development:_ACA_2.0_Phase_2+baking+dev"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "ansible-local",
+      "extra_arguments": [
+        "-e sirca_role=selinux"
+      ],
+      "playbook_dir": "ansible",
+      "playbook_file": "ansible/one_role.yml",
+      "inventory_file": "ansible/local_inventory.yml"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo reboot"
+      ]
+    },
+    {
+      "type": "shell",
+      "pause_before": "1m", 
+      "inline": [
+        "/usr/sbin/selinuxenabled"
+      ]
+    }
+  ]
+}

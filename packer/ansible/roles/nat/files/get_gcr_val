@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+import time
+from gcr import GCR
+from pprint import pprint as pp
+
+parser = argparse.ArgumentParser(description='Fetch a GCR value for a key', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('resource', metavar='<RESOURCE>', type=str, help='Resource name (e.g. awsprototype-app)')
+parser.add_argument('key', metavar='<KEY>', type=str, help='Key name (e.g. webq)')
+
+args = parser.parse_args()
+
+gcr = GCR()
+
+# Keep trying to fetch the resource
+while True:
+    try:
+        res = gcr.get(args.resource)
+        break
+    except:
+        sys.stderr.write("ERROR: could not access resource '%s'... sleeping for 5 seconds\n" % args.resource)
+        time.sleep(5)
+
+# Now fetch the value
+try:
+    print res[args.key]
+except KeyError:
+    sys.stderr.write("ERROR: key '%s' not found in resource data\n" % args.key)
+    sys.exit(1)
