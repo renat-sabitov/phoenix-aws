@@ -1,0 +1,8 @@
+---
+- name: check if buggy policy package installed
+  command: rpm -q selinux-policy-targeted
+  register: rpm_check
+
+- name: fix policy
+  include: fix_policy.yml
+  when: rpm_check.stdout.find('3.10.0-98.21.amzn1') != -1

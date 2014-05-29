@@ -1,0 +1,17 @@
+---
+- name: Install argparse
+  yum: name=python-argparse state=latest
+  sudo: yes
+
+- name: Install python utils
+  copy: src={{ item }} dest=/usr/lib/python2.6/site-packages owner=root group=root mode=0644
+  sudo: yes
+  with_fileglob: 
+    - "*.py"
+
+- name: Install nat scripts
+  copy: src={{ item }} dest=/usr/local/bin owner=root group=root mode=0755
+  sudo: yes
+  with_items:
+    - "get_gcr_val"
+    - "nat_monitor.sh"
